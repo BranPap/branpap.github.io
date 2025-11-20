@@ -1,0 +1,222 @@
+/* --- BASE STYLES (mostly unchanged) --- */
+
+.jspsych-memory-cards-grid {
+    width: 90vw;
+    margin: 0 auto;
+    max-width: 800px;
+    display: grid;
+    gap: 15px;
+    justify-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .jspsych-memory-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+  }
+  
+  .jspsych-memory-card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+  
+  .card-front,
+  .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    backface-visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .card-front {
+    background: #74B3CE;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .card-back {
+    transform: rotateY(180deg);
+    background: white;
+    flex-direction: column;
+    font-size: 1rem;
+  }
+  
+  .jspsych-memory-card-image {
+    width: 60%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  
+  /* --- MATCHING GRID STYLES --- */
+  
+  .jspsych-match-grid {
+    width: 90vw;
+    margin: 0 auto;
+    max-width: 800px;
+    text-align: center;
+  }
+  
+  .jspsych-match-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    justify-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .jspsych-match-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    user-select: none;
+    transition: all 0.3s ease;
+  }
+  
+  .jspsych-match-card:hover {
+    border-color: #74B3CE;
+  }
+  
+  .jspsych-match-card[data-selected="true"] {
+    border-color: #007bff;
+  }
+  
+  .jspsych-match-card.matched {
+    background-color: #c8f7c5;
+    border-color: green;
+    cursor: default;
+    transform: none;
+  }
+  
+  @keyframes mismatch-flash {
+    0% { border-color: red; background-color: #f8d7da; }
+    100% { border-color: #ccc; background-color: white; }
+  }
+  
+  .jspsych-match-card.mismatch {
+    animation: mismatch-flash 0.6s ease;
+  }
+  
+  .jspsych-match-card img {
+    width: 70%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .jspsych-match-post-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  
+  
+  /* --- RESPONSIVE ADJUSTMENTS --- */
+  
+  /* Tablets (portrait) */
+  @media (max-width: 1024px) {
+    .jspsych-memory-cards-grid,
+    .jspsych-match-grid-container {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+  
+    .card-front {
+      font-size: 1.6rem;
+    }
+  
+    .card-back {
+      font-size: 0.9rem;
+    }
+  
+    .jspsych-match-card {
+      font-size: 1.2rem;
+    }
+  }
+  
+  /* Mobile phones */
+  @media (max-width: 600px) {
+    .jspsych-memory-cards-grid,
+    .jspsych-match-grid-container {
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+  
+    .card-front {
+      font-size: 1.2rem;
+    }
+  
+    .card-back {
+      font-size: 0.8rem;
+    }
+  
+    .jspsych-memory-card-image {
+      width: 70%;
+    }
+  
+    .jspsych-match-card {
+      font-size: 1rem;
+      border-width: 1.5px;
+      border-radius: 8px;
+      padding: 2px;
+    }
+  
+    .jspsych-match-card img {
+      width: 65%;
+    }
+  
+    .jspsych-match-post-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  
+  /* Very small screens or landscape phones */
+  @media (max-width: 400px) {
+    .jspsych-memory-cards-grid,
+    .jspsych-match-grid-container {
+      grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+      gap: 8px;
+    }
+  
+    .card-front {
+      font-size: 1rem;
+    }
+  
+    .card-back {
+      font-size: 0.7rem;
+    }
+  
+    .jspsych-match-card {
+      font-size: 0.9rem;
+    }
+  }
+  

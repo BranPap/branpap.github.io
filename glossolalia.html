@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="glossolalia/data/nounVocab.js"></script>
+<title>Bran[don] Papineau</title>
+<style>
+  /* --- Inserted Bran's Theme Styles --- */
+  body {
+    font-family: "Open Sans", "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #fdfdfd;
+    color: #333;
+  }
+
+  header {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  header img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #74B3CE;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    margin-top: 1rem;
+    color: #8D6A9F;
+  }
+
+  nav {
+    margin-top: 1rem;
+  }
+
+  nav a {
+    display: inline-block;
+    margin: 0 1rem;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #74B3CE;
+    transition: color 0.3s ease;
+  }
+
+  nav a:hover {
+    color: #8D6A9F;
+  }
+
+  main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    line-height: 1.6;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  footer a {
+    color: #74B3CE;
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bran[don] Papineau</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="publications.html">Publications</a>
+    <a href="https://glossolalia.app">Glossolalia</a>
+  </nav>
+</header>
+
+<main>
+    <h1>Glossolalia: open-source language exercises</h1>
+  <p>
+    Welcome to Glossolalia, my passion project dedicated to creating and sharing open-source language-learning exercises. I believe that language learning should be freely available to all, and while these exercises are not a substitute for formal education, it is my hope that they will serve as supportive tools for those who, like me, loved doing grammar exercises in my high school language classes.
+  </p>
+    <h2>Available Exercises</h2>
+    <!-- ==========================================================
+     MENU SCREEN
+     ========================================================== -->
+<div id="menuScreen">
+    <h3>Memory Game</h3>
+    <p>Choose your languages and topic:</p>
+  
+    <label>Base Language:</label>
+    <select id="baseLang"></select>
+  
+    <br>
+  
+    <label>Target Language:</label>
+    <select id="targetLang"></select>
+  
+    <br>
+  
+    <label>Topic:</label>
+    <select id="topicSelect"></select>
+  
+    <br><br>
+  
+    <button onclick="openMemoryGame()">Start Game</button>
+
+    <script>
+        function openMemoryGame() {
+            const baseLang = document.getElementById('baseLang').value;
+            const targetLang = document.getElementById('targetLang').value;
+            const topicSelect = document.getElementById('topicSelect').value;
+            const url = `./glossolalia/exercises/memoryGame.html?baseLang=${(baseLang)}&targetLang=${(targetLang)}&topicSelect=${(topicSelect)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+  </div>
+</main>
+
+<footer>
+ © 2025 Brandon Papineau · branpap [at] stanford [dot] edu
+</footer>
+
+<script>
+    /* ==========================================================
+    UI INITIALIZATION
+    ========================================================== */
+    
+    const nounVocab = nounVocabData; // from nounVocab.js
+    
+    const baseSel = document.getElementById("baseLang");
+    const targetSel = document.getElementById("targetLang");
+    const topicSel = document.getElementById("topicSelect");
+    
+    function populateMenus() {
+      const topics = Object.keys(nounVocab);
+      topics.forEach(t => {
+        topicSel.innerHTML += `<option value="${t}">${t}</option>`;
+      });
+    
+      const firstItem = nounVocab[topics[0]][0];
+      const languages = Object.keys(firstItem.data);
+    
+      languages.forEach(lang => {
+        baseSel.innerHTML += `<option>${lang}</option>`;
+        targetSel.innerHTML += `<option>${lang}</option>`;
+      });
+    
+      baseSel.value = "English";
+      targetSel.value = "Finnish";
+    }
+    
+    populateMenus();
+</script>
+
+</body>
+</html>

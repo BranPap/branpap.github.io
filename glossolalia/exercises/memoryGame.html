@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="../data/nounVocab.js"></script>
+<title>Glossolalia Memory Game</title>
+
+
+<style>
+    /* ========= GLOBAL PAGE STYLES ========= */
+    body {
+        font-family: "Open Sans", Arial, sans-serif;
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+        background: #f9f9f9;
+    }
+    
+    h1 {
+        color: #74B3CE;
+        margin-bottom: 10px;
+    }
+    
+    /* ========= BUTTONS ========= */
+    button {
+        background-color: #74B3CE;
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        margin: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background .25s ease;
+    }
+    button:hover {
+        background-color: #5c96ae;
+    }
+    
+    /* ========= MEMORY GAME GRID ========= */
+    .memory-grid {
+        width: 90vw;
+        max-width: 800px;
+        margin: 20px auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+    
+    /* ========= MEMORY CARD BASE ========= */
+    .memory-card {
+        width: 100%;
+        aspect-ratio: 1 / 1.2;
+        position: relative;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        transition: transform 0.45s ease;
+        cursor: pointer;
+    }
+    
+    .memory-card.flipped {
+        transform: rotateY(180deg);
+    }
+    
+    /* ========= CARD FACES ========= */
+    .card-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        border: 2px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px;
+        font-size: 1.25rem;
+        overflow: hidden;
+    }
+    
+    /* FRONT */
+    .card-front {
+        background: #8D6A9F;
+        color: white;
+        font-weight: bold;
+    }
+    
+    /* BACK */
+    .card-back {
+        background: white;
+        transform: rotateY(180deg);
+        flex-direction: column;
+        font-size: 1rem;
+    }
+    
+    .card-back img {
+        max-width: 70%;
+        margin-bottom: 8px;
+    }
+    
+    /* ========= POST-GAME PANEL ========= */
+    #postGamePanel {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease;
+        margin-top: 25px;
+    }
+</style>
+    
+</head>
+
+<body>
+
+<!-- ==========================================================
+     GAME SCREEN
+     ========================================================== -->
+<div id="gameScreen" style="display:none;">
+  <h1 id="gameTitle"></h1>
+
+  <div id="memoryGrid" class="memory-grid"></div>
+
+  <div id="postGamePanel">
+    <button onclick="playAgain()">Play Again</button>
+    <button onclick="goHome()">Home</button>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   Vocabulary 
+   ========================================================== */
+
+
+
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+let baseLanguageParam = getQueryParam("baseLang") || "English"; 
+let targetLanguageParam = getQueryParam("targetLang") || "Finnish";
+let currentTopicParam = getQueryParam("topicSelect") || "animals";
+
+const nounVocab = nounVocabData[currentTopicParam].filter(item => item.data[targetLanguageParam] && item.data[baseLanguageParam])
+
+/* ============================
+   MEMORY GAME ENGINE
+   ============================ */
+
+function startGame() {
+    const baseLang = baseLanguageParam;
+    const targetLang = targetLanguageParam;
+    const topicSelect = currentTopicParam;
+
+    let cards = nounVocab.map(item => ({
+        entry: item.data[baseLang].translation,
+        image: item.image,
+        translation: item.data[targetLang].translation
+    }));
+
+    cards = shuffleArray(cards).slice(0, 6);
+    
+
+    // Duplicate and shuffle cards
+    let gameCards = [...cards, ...cards];
+    gameCards = shuffleArray(gameCards);
+
+    // Show game screen
+    document.getElementById("gameScreen").style.display = "block";
+    document.getElementById("gameTitle").textContent = `Match the ${targetLang} words!`;
+
+    const grid = document.getElementById("memoryGrid");
+    grid.innerHTML = "";
+
+    // Reset post-game panel
+    const postGame = document.getElementById("postGamePanel");
+    postGame.style.visibility = "hidden";
+    postGame.style.opacity = 0;
+
+    // Create cards
+    gameCards.forEach((card, index) => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "memory-card";
+        cardDiv.dataset.index = index;
+
+        cardDiv.innerHTML = `
+            <div class="card-face card-front">?</div>
+            <div class="card-face card-back">
+                <div><h2 style="margin:0.3cm"><span style="color:#74B3CE">${card.translation}</span></h2></div>
+                <img src="${card.image}" alt="${card.entry}">
+                <div><em><span style="color:grey">${card.entry}</span><em></div>
+            </div>
+        `;
+
+        grid.appendChild(cardDiv);
+    });
+
+    const cardElems = document.querySelectorAll(".memory-card");
+    let flipped = [];
+    let matched = [];
+    let locked = false;
+    const startTime = performance.now();
+
+    cardElems.forEach(card => {
+        card.addEventListener("click", () => {
+            if (locked) return;
+
+            const idx = parseInt(card.dataset.index);
+            if (!flipped.includes(idx) && !matched.includes(idx)) {
+                card.classList.add("flipped");
+                flipped.push(idx);
+            }
+
+            if (flipped.length === 2) {
+                const [a, b] = flipped;
+                const first = gameCards[a];
+                const second = gameCards[b];
+                locked = true;
+
+                if (first.entry === second.entry) {
+                    matched.push(a, b);
+                    flipped = [];
+                    locked = false;
+                } else {
+                    setTimeout(() => {
+                        cardElems[a].classList.remove("flipped");
+                        cardElems[b].classList.remove("flipped");
+                        flipped = [];
+                        locked = false;
+                    }, 1200);
+                }
+            }
+
+            if (matched.length === gameCards.length) {
+                const endTime = performance.now();
+                console.log(`Game complete! Time: ${(endTime - startTime) / 1000}s`);
+
+                postGame.style.visibility = "visible";
+                postGame.style.opacity = 1;
+            }
+        });
+    });
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function playAgain() {
+    startGame();
+}
+
+function goHome() {
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("menuScreen").style.display = "block";
+}
+
+startGame();
+</script>
+
+
+
+</body>
+</html>
