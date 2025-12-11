@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script src="./glossolalia2/data/nounVocab.js"></script>
+<script src="./glossolalia2/data/verbVocab.js"></script>
 <title>Bran[don] Papineau</title>
 <style>
   /* --- Inserted Bran's Theme Styles --- */
@@ -95,15 +96,16 @@
 <main>
     <h1>Glossolalia: open-source language exercises</h1>
   <p>
-    Welcome to Glossolalia, my passion project dedicated to creating and sharing open-source language-learning exercises. I believe that language learning should be freely available to all, and while these exercises are not a substitute for formal education, it is my hope that they will serve as supportive tools for language learners. Especially for those who, like me, loved doing grammar exercises in their high school language classes 💜.
+    Welcome to Glossolalia, my personal repository of language learning exercises. I missed the old days when I could drill Spanish conjugations online with no ads and no AI, so I made my own exercises. 
   </p>
-    <h2>Available Exercises</h2>
+    <h2>Available Exercises <em style="font-size: 0.5em;">(All exercises will open in a new window)</em></h2>
+    
     <!-- ==========================================================
      MENU SCREEN
      ========================================================== -->
 <div id="menuScreen">
     <h3>Memory Game</h3>
-    <p>Choose your languages and topic (this will open a new window):</p>
+    <p>Choose your languages and topic:</p>
   
     <label>Base Language:</label>
     <select id="baseLang"></select>
@@ -128,9 +130,41 @@
             const targetLang = document.getElementById('targetLang').value;
             const topicSelect = document.getElementById('topicSelect').value;
             const url = `./glossolalia2/exercises/memoryGame.html?baseLang=${(baseLang)}&targetLang=${(targetLang)}&topicSelect=${(topicSelect)}`;
-            window.open(url, '_blank');
+            window.open(url);
         }
     </script>
+
+    <h3>Conjugation Practice</h3>
+    <p>Choose your languages and tense:</p>
+    <label>Base Language:</label>
+    <select id="baseLangConj"></select>
+
+    <br>
+
+    <label>Target Language:</label>
+    <select id="targetLangConj"></select>
+
+    <br>
+
+    <label>Tense:</label>
+    <select id="tenseSelect"></select> (<span style="font-size: 1em;" id="exerciseCount"></span>)
+
+    <br><br>
+
+    <button onclick="openConjugationGame()">Start Practice</button>
+
+    <script>
+        function openConjugationGame() {
+            const baseLang = document.getElementById('baseLangConj').value;
+            const targetLang = document.getElementById('targetLangConj').value;
+            const tenseSelect = document.getElementById('tenseSelect').value;
+            const url = `./glossolalia2/exercises/conjugate.html?baseLang=${(baseLang)}&targetLang=${(targetLang)}&tenseSelect=${(tenseSelect)}`;
+            window.open(url);
+        }
+    </script>
+
+    
+
   </div>
 </main>
 
@@ -168,6 +202,90 @@
     }
     
     populateMenus();
+
+/* ==========================================================
+UI INITIALIZATION FOR CONJUGATION PRACTICE
+========================================================== */
+
+const verbVocabData = verbData;
+
+const baseSelConj = document.getElementById("baseLangConj");
+const targetSelConj = document.getElementById("targetLangConj");
+const tenseSel = document.getElementById("tenseSelect");
+const exerciseCount = document.getElementById("exerciseCount");
+
+function updateExerciseCount(baseLang, targetLang, tense) {
+  const count = verbVocabData.verbs.filter(v =>
+    v.data[baseLang] &&
+    v.data[targetLang] &&
+    v.data[baseLang][tense] &&
+    v.data[targetLang][tense]
+  ).length;
+
+  exerciseCount.innerHTML = count;
+}
+
+function populateTenseMenu(baseLang, targetLang) {
+  tenseSel.innerHTML = "";
+
+  const allTenses = Object.keys(
+    verbVocabData.verbs[0].data[baseLang]
+  ).filter(k => k !== "infinitive");
+
+  const availableTenses = [];
+
+  allTenses.forEach(tense => {
+    const count = verbVocabData.verbs.filter(v =>
+      v.data[baseLang] &&
+      v.data[targetLang] &&
+      v.data[baseLang][tense] &&
+      v.data[targetLang][tense]
+    ).length;
+
+    if (count > 0) {
+      availableTenses.push(tense);
+      tenseSel.innerHTML += `<option value="${tense}">${tense}</option>`;
+    }
+  });
+
+  // select first valid tense
+  if (availableTenses.length > 0) {
+    tenseSel.value = availableTenses[0];
+    updateExerciseCount(baseLang, targetLang, availableTenses[0]);
+  }
+}
+
+function populateConjMenus() {
+  const firstVerb = verbVocabData.verbs[0];
+  const languages = Object.keys(firstVerb.data);
+
+  languages.forEach(lang => {
+    baseSelConj.innerHTML += `<option>${lang}</option>`;
+    targetSelConj.innerHTML += `<option>${lang}</option>`;
+  });
+
+  baseSelConj.value = "English";
+  targetSelConj.value = "Finnish";
+
+  populateTenseMenu("English", "Finnish");
+}
+
+// event listeners must come AFTER variables & functions
+baseSelConj.addEventListener("change", () => {
+  populateTenseMenu(baseSelConj.value, targetSelConj.value);
+});
+
+targetSelConj.addEventListener("change", () => {
+  populateTenseMenu(baseSelConj.value, targetSelConj.value);
+});
+
+tenseSel.addEventListener("change", () => {
+  updateExerciseCount(baseSelConj.value, targetSelConj.value, tenseSel.value);
+});
+
+
+populateConjMenus();
+
 </script>
 
 </body>
