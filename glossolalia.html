@@ -1,292 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="./glossolalia2/data/nounVocab.js"></script>
-<script src="./glossolalia2/data/verbVocab.js"></script>
-<title>Bran[don] Papineau</title>
-<style>
-  /* --- Inserted Bran's Theme Styles --- */
-  body {
-    font-family: "Open Sans", "Arial", sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #fdfdfd;
-    color: #333;
-  }
-
-  header {
-    text-align: center;
-    padding: 2rem 1rem;
-    margin-bottom: 1rem;
-  }
-
-  header img {
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 4px solid #74B3CE;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  }
-
-  h1 {
-    font-size: 2.4rem;
-    margin-top: 1rem;
-    color: #8D6A9F;
-  }
-
-  nav {
-    margin-top: 1rem;
-  }
-
-  nav a {
-    display: inline-block;
-    margin: 0 1rem;
-    text-decoration: none;
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #74B3CE;
-    transition: color 0.3s ease;
-  }
-
-  nav a:hover {
-    color: #8D6A9F;
-  }
-
-  main {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    line-height: 1.6;
-  }
-
-  footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  footer a {
-    color: #74B3CE;
-    text-decoration: none;
-  }
-
-  footer a:hover {
-    text-decoration: underline;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glossolalia - Speak in New Tongues</title>
+  <!-- All assets (css/, js/, images/) live in the glossolalia/ subfolder of the site repo.
+       This <base> makes every relative path below (and the image src's set by js/data.js)
+       resolve under glossolalia/ — so the asset folders are copied in verbatim, unedited. -->
+  <base href="glossolalia/">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<header>
-  <h1>Bran[don] Papineau</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="publications.html">Publications</a>
-    <a href="glossolalia.html">Glossolalia</a>
-  </nav>
-</header>
+<div class="app-container">
 
-<main>
-    <h1>Glossolalia: open-source language exercises</h1>
-  <p>
-    Welcome to Glossolalia, my personal repository of language learning exercises. I missed the old days when I could drill Spanish conjugations online with no ads and no AI, so I made my own exercises. 
-  </p>
-    <h2>Available Exercises <em style="font-size: 0.5em;">(All exercises will open in a new window)</em></h2>
-    
-    <!-- ==========================================================
-     MENU SCREEN
-     ========================================================== -->
-<div id="menuScreen">
-    <h3>Memory Game</h3>
-    <p>Choose your languages and topic:</p>
-  
-    <label>Base Language:</label>
-    <select id="baseLang"></select>
-  
-    <br>
-  
-    <label>Target Language:</label>
-    <select id="targetLang"></select>
-  
-    <br>
-  
-    <label>Topic:</label>
-    <select id="topicSelect"></select>
-  
-    <br><br>
-  
-    <button onclick="openMemoryGame()">Start Game</button>
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <h1>Glossolalia</h1>
+    <p class="tagline">Speak in new tongues! Free, open-source language learning games.</p>
+    <button class="settings-btn" onclick="Progress.renderSettingsModal()" title="Settings">&#x2699;&#xFE0F;</button>
+  </header>
 
-    <script>
-        function openMemoryGame() {
-            const baseLang = document.getElementById('baseLang').value;
-            const targetLang = document.getElementById('targetLang').value;
-            const topicSelect = document.getElementById('topicSelect').value;
-            const url = `./glossolalia2/exercises/memoryGame.html?baseLang=${(baseLang)}&targetLang=${(targetLang)}&topicSelect=${(topicSelect)}`;
-            window.open(url);
-        }
-    </script>
-
-    <h3>Conjugation Practice</h3>
-    <p>Choose your languages and tense:</p>
-    <label>Base Language:</label>
-    <select id="baseLangConj"></select>
-
-    <br>
-
-    <label>Target Language:</label>
-    <select id="targetLangConj"></select>
-
-    <br>
-
-    <label>Tense:</label>
-    <select id="tenseSelect"></select> (<span style="font-size: 1em;" id="exerciseCount"></span>)
-
-    <br><br>
-
-    <button onclick="openConjugationGame()">Start Practice</button>
-
-    <script>
-        function openConjugationGame() {
-            const baseLang = document.getElementById('baseLangConj').value;
-            const targetLang = document.getElementById('targetLangConj').value;
-            const tenseSelect = document.getElementById('tenseSelect').value;
-            const url = `./glossolalia2/exercises/conjugate.html?baseLang=${(baseLang)}&targetLang=${(targetLang)}&tenseSelect=${(tenseSelect)}`;
-            window.open(url);
-        }
-    </script>
-
-    
-
+  <!-- ===== LANGUAGE BAR ===== -->
+  <div class="lang-bar">
+    <label for="source-lang">I speak:</label>
+    <select id="source-lang"></select>
+    <button class="swap-btn" id="swap-langs" title="Swap languages">&harr;</button>
+    <label for="target-lang">I'm learning:</label>
+    <select id="target-lang"></select>
+    <span id="word-count" style="font-size:0.9rem; color:var(--text-light);"></span>
   </div>
-</main>
 
-<footer>
- © 2025 Brandon Papineau · branpap [at] stanford [dot] edu
-</footer>
+  <!-- ===== HOME SCREEN ===== -->
+  <div id="screen-home" class="screen active">
+    <div class="home-layout">
+      <div class="home-main">
+        <div class="game-grid">
 
-<script>
-    /* ==========================================================
-    UI INITIALIZATION FOR MEMORY GAME
-    ========================================================== */
-    
-    const nounVocab = nounVocabData; // from nounVocab.js
-    
-    const baseSel = document.getElementById("baseLang");
-    const targetSel = document.getElementById("targetLang");
-    const topicSel = document.getElementById("topicSelect");
-    
-    function populateMenus() {
-      const topics = Object.keys(nounVocab);
-      topics.forEach(t => {
-        topicSel.innerHTML += `<option value="${t}">${t}</option>`;
-      });
-    
-      const firstItem = nounVocab[topics[0]][0];
-      const languages = Object.keys(firstItem.data);
-    
-      languages.forEach(lang => {
-        baseSel.innerHTML += `<option>${lang}</option>`;
-        targetSel.innerHTML += `<option>${lang}</option>`;
-      });
-    
-      baseSel.value = "English";
-      targetSel.value = "Finnish";
-    }
-    
-    populateMenus();
+          <div class="game-card" data-game="flashcards">
+            <div class="icon">&#x1F0CF;</div>
+            <h3>Flashcards</h3>
+            <p>Flip through cards to learn new words. Mark what you know and what you're still learning.</p>
+          </div>
 
-/* ==========================================================
-UI INITIALIZATION FOR CONJUGATION PRACTICE
-========================================================== */
+          <div class="game-card" data-game="quiz">
+            <div class="icon">&#x2753;</div>
+            <h3>Quiz</h3>
+            <p>Multiple choice challenge. See an image and pick the correct translation.</p>
+          </div>
 
-const verbVocabData = verbData;
+          <div class="game-card" data-game="memory">
+            <div class="icon">&#x1F9E0;</div>
+            <h3>Memory Match</h3>
+            <p>Classic card-flip matching. Pair images with their translations.</p>
+          </div>
 
-const baseSelConj = document.getElementById("baseLangConj");
-const targetSelConj = document.getElementById("targetLangConj");
-const tenseSel = document.getElementById("tenseSelect");
-const exerciseCount = document.getElementById("exerciseCount");
+          <div class="game-card" data-game="spelling">
+            <div class="icon">&#x270D;&#xFE0F;</div>
+            <h3>Spelling Bee</h3>
+            <p>Type the translation from memory. Practice your spelling and recall.</p>
+          </div>
 
-function updateExerciseCount(baseLang, targetLang, tense) {
-  const count = verbVocabData.verbs.filter(v =>
-    v.data[baseLang] &&
-    v.data[targetLang] &&
-    v.data[baseLang][tense] &&
-    v.data[targetLang][tense]
-  ).length;
+          <div class="game-card" data-game="builder">
+            <div class="icon">&#x1F9E9;</div>
+            <h3>Word Builder</h3>
+            <p>Assemble words from syllable pieces. Learn how words are constructed.</p>
+          </div>
 
-  exerciseCount.innerHTML = count;
-}
+          <!-- Speed Round hidden until vocab expands
+          <div class="game-card" data-game="speed" style="border:2px solid var(--red);">
+            <div class="icon">&#x26A1;</div>
+            <h3>Speed Round</h3>
+            <p>60-second blitz! Answer fast, build combos, earn multipliers. How high can you score?</p>
+          </div>
+          -->
 
-function populateTenseMenu(baseLang, targetLang) {
-  tenseSel.innerHTML = "";
+          <div class="game-card" data-game="hangman">
+            <div class="icon">&#x1F3AD;</div>
+            <h3>Hangman</h3>
+            <p>Guess the word letter by letter. The image is your only clue!</p>
+          </div>
 
-  const allTenses = Object.keys(
-    verbVocabData.verbs[0].data[baseLang]
-  ).filter(k => k !== "infinitive");
+        </div>
+      </div>
 
-  const availableTenses = [];
+      <aside class="home-sidebar">
+        <div id="word-spotlight" class="spotlight-card">
+          <!-- populated by refreshSpotlight() -->
+        </div>
+        <div id="progress-card" class="spotlight-card" style="margin-top:1rem;">
+          <!-- populated by Progress.renderProgressCard() -->
+        </div>
+      </aside>
+    </div>
 
-  allTenses.forEach(tense => {
-    const count = verbVocabData.verbs.filter(v =>
-      v.data[baseLang] &&
-      v.data[targetLang] &&
-      v.data[baseLang][tense] &&
-      v.data[targetLang][tense]
-    ).length;
+    <footer class="app-footer">
+      maintained with &hearts; by <a href="https://www.branpap.com">Bran[don] Papineau</a><br>
+      <span style="font-size:0.8rem;">with images by Rachel Downs</span>
+    </footer>
+  </div>
 
-    if (count > 0) {
-      availableTenses.push(tense);
-      tenseSel.innerHTML += `<option value="${tense}">${tense}</option>`;
-    }
-  });
+  <!-- ===== FLASHCARDS SCREEN ===== -->
+  <div id="screen-flashcards" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Flashcards</h2>
+    </div>
+    <div id="flashcard-content"></div>
+  </div>
 
-  // select first valid tense
-  if (availableTenses.length > 0) {
-    tenseSel.value = availableTenses[0];
-    updateExerciseCount(baseLang, targetLang, availableTenses[0]);
-  }
-}
+  <!-- ===== QUIZ SCREEN ===== -->
+  <div id="screen-quiz" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Quiz</h2>
+    </div>
+    <div id="quiz-content"></div>
+  </div>
 
-function populateConjMenus() {
-  const firstVerb = verbVocabData.verbs[0];
-  const languages = Object.keys(firstVerb.data);
+  <!-- ===== MEMORY SCREEN ===== -->
+  <div id="screen-memory" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Memory Match</h2>
+    </div>
+    <div id="memory-content"></div>
+  </div>
 
-  languages.forEach(lang => {
-    baseSelConj.innerHTML += `<option>${lang}</option>`;
-    targetSelConj.innerHTML += `<option>${lang}</option>`;
-  });
+  <!-- ===== SPELLING SCREEN ===== -->
+  <div id="screen-spelling" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Spelling Bee</h2>
+    </div>
+    <div id="spelling-content"></div>
+  </div>
 
-  baseSelConj.value = "English";
-  targetSelConj.value = "Finnish";
+  <!-- ===== WORD BUILDER SCREEN ===== -->
+  <div id="screen-builder" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Word Builder</h2>
+    </div>
+    <div id="builder-content"></div>
+  </div>
 
-  populateTenseMenu("English", "Finnish");
-}
+  <!-- ===== SPEED ROUND SCREEN ===== -->
+  <div id="screen-speed" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Speed Round</h2>
+    </div>
+    <div id="speed-content"></div>
+  </div>
 
-// event listeners must come AFTER variables & functions
-baseSelConj.addEventListener("change", () => {
-  populateTenseMenu(baseSelConj.value, targetSelConj.value);
-});
+  <!-- ===== HANGMAN SCREEN ===== -->
+  <div id="screen-hangman" class="screen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()">&larr;</button>
+      <h2>Hangman</h2>
+    </div>
+    <div id="hangman-content"></div>
+  </div>
 
-targetSelConj.addEventListener("change", () => {
-  populateTenseMenu(baseSelConj.value, targetSelConj.value);
-});
+</div>
 
-tenseSel.addEventListener("change", () => {
-  updateExerciseCount(baseSelConj.value, targetSelConj.value, tenseSel.value);
-});
-
-
-populateConjMenus();
-
-</script>
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/games/flashcards.js"></script>
+<script src="js/games/quiz.js"></script>
+<script src="js/games/memory.js"></script>
+<script src="js/games/spelling.js"></script>
+<script src="js/games/morpheme.js"></script>
+<script src="js/games/speedround.js"></script>
+<script src="js/games/hangman.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
